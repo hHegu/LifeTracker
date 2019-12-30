@@ -5,11 +5,13 @@ import './colorSelection.dart';
 
 class LifeCounter extends StatefulWidget {
   final bool upSideDown;
+  final bool portraitMode;
   final PlayerStats player;
   final Function(int, PlayerStats) setHealthHandler;
 
   LifeCounter({
     this.upSideDown = false,
+    this.portraitMode = false,
     @required this.player,
     @required this.setHealthHandler,
   });
@@ -33,7 +35,9 @@ class _LifeCounterState extends State<LifeCounter> {
   @override
   Widget build(BuildContext context) {
     return RotatedBox(
-      quarterTurns: widget.upSideDown ? 2 : 0,
+      quarterTurns: widget.portraitMode
+          ? (widget.upSideDown ? 0 : 2)
+          : (widget.upSideDown ? 1 : 3),
       child: Stack(children: <Widget>[
         Card(
           color: usedColor.backgroundColor,

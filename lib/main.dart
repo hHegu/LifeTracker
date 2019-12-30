@@ -41,10 +41,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations( 
+    SystemChrome.setPreferredOrientations(
       [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
+        // DeviceOrientation.landscapeLeft,
+        // DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitUp
       ],
     );
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -75,6 +76,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /// Sets up a lifecounter for a player. 
+  /// Determines how to draw the lifecounter, 
+  /// wheter it's on landscape, portrait, upside down or rightside up.
+  Widget setupPlayerLifecounter(PlayerStats player) {
+    bool isTwoPlayerGame = playerCount == 2;
+    bool isThirdPlayerInThreePlayerGame =
+        playerCount == 3 && player.playerNumber == 3;
+    bool usePortraitMode = playerCount == 2 || isThirdPlayerInThreePlayerGame;
+    bool isUpsideDown = player.playerNumber.remainder(2) == 1;
+    double widthMultiplier = usePortraitMode ? 1 : 0.47;
+    double heightMultiplier = 0.45;
+    return Container(
+      width: MediaQuery.of(context).size.width * widthMultiplier - 8,
+      height: MediaQuery.of(context).size.height * heightMultiplier,
+      child: LifeCounter(
+        player: player,
+        upSideDown: isTwoPlayerGame ? !isUpsideDown : isUpsideDown,
+        portraitMode: usePortraitMode,
+        setHealthHandler: increasePlayerHealth,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,83 +110,30 @@ class _MyHomePageState extends State<MyHomePage> {
         playerCount: playerCount,
         setPlayerCountHandler: setPlayerCount,
       ),
-      body: Stack(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: playerCount > 3
-                    ? [
-                        Expanded(
-                          flex: 1,
-                          child: LifeCounter(
-                            player: players[0],
-                            upSideDown: true,
-                            setHealthHandler: increasePlayerHealth,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: LifeCounter(
-                            player: players[2],
-                            upSideDown: true,
-                            setHealthHandler: increasePlayerHealth,
-                          ),
-                        ),
-                      ]
-                    : [
-                        LifeCounter(
-                          player: players[0],
-                          upSideDown: true,
-                          setHealthHandler: increasePlayerHealth,
-                        ),
-                      ],
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: playerCount > 2
-                    ? [
-                        Expanded(
-                          flex: 1,
-                          child: LifeCounter(
-                            player: players[1],
-                            setHealthHandler: increasePlayerHealth,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: LifeCounter(
-                            player: players[3],
-                            setHealthHandler: increasePlayerHealth,
-                          ),
-                        )
-                      ]
-                    : [
-                        LifeCounter(
-                          player: players[1],
-                          setHealthHandler: increasePlayerHealth,
-                        ),
-                      ],
-              ),
-            ),
-          ],
-        ),
-        Builder(
-          builder: (context) => IconButton(
-            padding: EdgeInsets.all(15),
-            iconSize: 30,
-            icon: new Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+      body: Stack(
+        children: [
+          Center(
+            child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                direction: Axis.horizontal,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: players
+                    .where((player) => player.playerNumber <= playerCount)
+                    .map(setupPlayerLifecounter)
+                    .toList()),
           ),
-        ),
-      ]),
+          Builder(
+            builder: (context) => IconButton(
+              padding: EdgeInsets.all(15),
+              iconSize: 30,
+              icon: new Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
