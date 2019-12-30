@@ -23,7 +23,7 @@ class LifeCounter extends StatefulWidget {
 class _LifeCounterState extends State<LifeCounter> {
   ColorSelection usedColor = ColorSelection(
     textColor: Colors.black,
-    backgroundColor: Colors.white,
+    color1: Colors.white,
   );
 
   void changeColor(ColorSelection color) {
@@ -31,6 +31,41 @@ class _LifeCounterState extends State<LifeCounter> {
       this.usedColor = color;
     });
   }
+
+  Decoration getLifeCounterContainerDecoration() {
+    var image = usedColor.image;
+    if (image != null) {
+      return BoxDecoration(
+        image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
+        borderRadius: new BorderRadius.all(
+          new Radius.circular(3.0),
+        ),
+      );
+    } else {
+      return BoxDecoration(color: usedColor.color1);
+    }
+  }
+
+  Shadow textShadow = Shadow(
+    blurRadius: 2,
+    color: Colors.black,
+    offset: Offset.fromDirection(0.25),
+  );
+
+  Widget getSetHealthButton(String text, int healthMultiplier) =>
+      RawMaterialButton(
+        onPressed: () => widget.setHealthHandler(healthMultiplier, widget.player),
+        padding: EdgeInsets.all(40),
+        shape: CircleBorder(),
+        child: Text(
+          text,
+          style: TextStyle(
+            shadows: [textShadow],
+            fontSize: 50,
+            color: widget.player.life > 0 ? usedColor.textColor : Colors.red,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -40,38 +75,30 @@ class _LifeCounterState extends State<LifeCounter> {
           : (widget.upSideDown ? 1 : 3),
       child: Stack(children: <Widget>[
         Card(
-          color: usedColor.backgroundColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.remove),
-                iconSize: 40,
-                color: usedColor.textColor,
-                padding: EdgeInsets.all(40),
-                onPressed: () => widget.setHealthHandler(-1, widget.player),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                width: 100,
-                alignment: Alignment.center,
-                child: Text(
-                  widget.player.life.toString(),
-                  style: TextStyle(
+          child: Container(
+            decoration: getLifeCounterContainerDecoration(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                getSetHealthButton('-', -1),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  width: 130,
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.player.life.toString(),
+                    style: TextStyle(
+                      shadows: [textShadow],
                       fontSize: 64,
                       color: widget.player.life > 0
                           ? usedColor.textColor
-                          : Colors.red),
+                          : Colors.red,
+                    ),
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.add),
-                color: usedColor.textColor,
-                onPressed: () => widget.setHealthHandler(1, widget.player),
-                padding: EdgeInsets.all(40),
-                iconSize: 40,
-              ),
-            ],
+                getSetHealthButton('+', 1),
+              ],
+            ),
           ),
         ),
         ColorPicker(selectedColor: usedColor, selectColorHandler: changeColor)

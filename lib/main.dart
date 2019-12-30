@@ -76,20 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  /// Sets up a lifecounter for a player. 
-  /// Determines how to draw the lifecounter, 
+  /// Sets up a lifecounter for a player.
+  /// Determines how to draw the lifecounter,
   /// wheter it's on landscape, portrait, upside down or rightside up.
   Widget setupPlayerLifecounter(PlayerStats player) {
+    var queryData = MediaQuery.of(context);
+
     bool isTwoPlayerGame = playerCount == 2;
     bool isThirdPlayerInThreePlayerGame =
         playerCount == 3 && player.playerNumber == 3;
     bool usePortraitMode = playerCount == 2 || isThirdPlayerInThreePlayerGame;
     bool isUpsideDown = player.playerNumber.remainder(2) == 1;
-    double widthMultiplier = usePortraitMode ? 1 : 0.47;
-    double heightMultiplier = 0.45;
+
+    double widthMultiplier = usePortraitMode ? 0.945 : 0.47;
+    double heightMultiplier = usePortraitMode ? 0.4 : 0.45;
+
+
     return Container(
-      width: MediaQuery.of(context).size.width * widthMultiplier - 8,
-      height: MediaQuery.of(context).size.height * heightMultiplier,
+      width: queryData.size.width * widthMultiplier - 8,
+      height: queryData.size.height * heightMultiplier,
       child: LifeCounter(
         player: player,
         upSideDown: isTwoPlayerGame ? !isUpsideDown : isUpsideDown,
@@ -114,15 +119,16 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Center(
             child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                alignment: WrapAlignment.center,
-                direction: Axis.horizontal,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: players
-                    .where((player) => player.playerNumber <= playerCount)
-                    .map(setupPlayerLifecounter)
-                    .toList()),
+              spacing: 8.0,
+              runSpacing: 8.0,
+              alignment: WrapAlignment.center,
+              direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: players
+                  .where((player) => player.playerNumber <= playerCount)
+                  .map(setupPlayerLifecounter)
+                  .toList(),
+            ),
           ),
           Builder(
             builder: (context) => IconButton(
