@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:life_counter_app/mainDrawer.dart';
+import 'package:wakelock/wakelock.dart';
+
+import './mainDrawer.dart';
 import './lifeCounter.dart';
 import './playerStats.dart';
 
@@ -39,13 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations(
+    SystemChrome.setPreferredOrientations( 
       [
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ],
     );
     SystemChrome.setEnabledSystemUIOverlays([]);
+    Wakelock.enable();
   }
 
   void increasePlayerHealth(int amount, PlayerStats player) {
@@ -75,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       drawer: MainDrawer(
         resetHandler: resetGame,
         setStartingLifeHandler: setStartingLife,
