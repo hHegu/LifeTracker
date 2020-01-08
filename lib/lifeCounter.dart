@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import './lifeGain.dart';
 import './colorPicker.dart';
 import './playerStats.dart';
 import './colorSelection.dart';
@@ -52,9 +54,51 @@ class _LifeCounterState extends State<LifeCounter> {
     offset: Offset.fromDirection(0.25),
   );
 
+  setHealth(int healthMultiplier, PlayerStats player) {
+    setLifeGain(healthMultiplier);
+    widget.setHealthHandler(healthMultiplier, widget.player);
+  }
+
+  // Life gain debounce logic TODO: move this to a separate file
+  int lifeGain = 0;
+  bool isLifeGainVisible = false;
+  Timer _setLifeGainDebounce;
+  Timer _resetLifeGainDebounce;
+  static Duration _timerSetLifeGainDuration =
+      Duration(seconds: 1, milliseconds: 500);
+
+  static Duration _timerResetLifeGainDuration = Duration(milliseconds: 400);
+
+  resetLifeGain() {
+    this.setState(() {
+      isLifeGainVisible = false;
+    });
+    _resetLifeGainDebounce = Timer(_timerResetLifeGainDuration, () {
+      this.setState(() {
+        lifeGain = 0;
+      });
+    });
+  }
+
+  setLifeGain(int amount) {
+    if (_resetLifeGainDebounce?.isActive ?? false)
+      _resetLifeGainDebounce.cancel();
+    if (_setLifeGainDebounce?.isActive ?? false)
+      _setLifeGainDebounce.cancel();
+
+    _setLifeGainDebounce = Timer(_timerSetLifeGainDuration, () {
+      resetLifeGain();
+    });
+
+    this.setState(() {
+      lifeGain += amount;
+      isLifeGainVisible = true;
+    });
+  }
+
   Widget getSetHealthButton(String text, int healthMultiplier) =>
       RawMaterialButton(
-        onPressed: () => widget.setHealthHandler(healthMultiplier, widget.player),
+        onPressed: () => setHealth(healthMultiplier, widget.player),
         padding: EdgeInsets.all(40),
         shape: CircleBorder(),
         child: Text(
@@ -82,20 +126,33 @@ class _LifeCounterState extends State<LifeCounter> {
               children: <Widget>[
                 getSetHealthButton('-', -1),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  width: 130,
-                  alignment: Alignment.center,
-                  child: Text(
-                    widget.player.life.toString(),
-                    style: TextStyle(
-                      shadows: [textShadow],
-                      fontSize: 64,
-                      color: widget.player.life > 0
-                          ? usedColor.textColor
-                          : Colors.red,
-                    ),
-                  ),
-                ),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    width: 130,
+                    alignment: Alignment.center,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: <Widget>[
+                        Text(
+                          widget.player.life.toString(),
+                          style: TextStyle(
+                            shadows: [textShadow],
+                            fontSize: 64,
+                            color: widget.player.life > 0
+                                ? usedColor.textColor
+                                : Colors.red,
+                          ),
+                        ),
+                        LifeGain(
+                          lifeChange: lifeGain,
+                          visible: isLifeGainVisible,
+                          textStyle: TextStyle(
+                              shadows: [textShadow],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: usedColor.textColor),
+                        ),
+                      ],
+                    )),
                 getSetHealthButton('+', 1),
               ],
             ),
