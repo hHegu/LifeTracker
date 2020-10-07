@@ -36,17 +36,22 @@ class _LifeCounterState extends State<LifeCounter> {
     });
   }
 
+  var cardBorderRadius = new BorderRadius.all(
+    new Radius.circular(16.0),
+  );
+
   Decoration getLifeCounterContainerDecoration() {
     var image = usedColor.image;
     if (image != null) {
       return BoxDecoration(
         image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
-        borderRadius: new BorderRadius.all(
-          new Radius.circular(3.0),
-        ),
+        borderRadius: cardBorderRadius,
       );
     } else {
-      return BoxDecoration(color: usedColor.color1);
+      return BoxDecoration(
+        color: usedColor.color1,
+        borderRadius: cardBorderRadius,
+      );
     }
   }
 
@@ -123,6 +128,7 @@ class _LifeCounterState extends State<LifeCounter> {
           margin: widget.useCardLayout ? EdgeInsets.all(4.0) : EdgeInsets.zero,
           shadowColor: widget.useCardLayout ? Colors.black : Colors.transparent,
           elevation: widget.useCardLayout ? 2 : 0,
+          shape: RoundedRectangleBorder(borderRadius: cardBorderRadius),
           child: Container(
             decoration: getLifeCounterContainerDecoration(),
             child: Row(
