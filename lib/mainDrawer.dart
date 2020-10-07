@@ -4,15 +4,19 @@ class MainDrawer extends StatelessWidget {
   Function resetHandler;
   int startingLife;
   int playerCount;
+  bool useCardLayout;
   Function setStartingLifeHandler;
   Function setPlayerCountHandler;
+  Function toggleCardLayout;
 
   MainDrawer({
     @required this.resetHandler,
     @required this.startingLife,
+    @required this.playerCount,
     @required this.setStartingLifeHandler,
     @required this.setPlayerCountHandler,
-    @required this.playerCount,
+    @required this.toggleCardLayout,
+    @required this.useCardLayout,
   });
 
   var maxStartingLives = [10, 20, 30, 40, 50];
@@ -76,6 +80,12 @@ class MainDrawer extends StatelessWidget {
             isSelected: maxStartingLives
                 .map<bool>((life) => life == this.startingLife)
                 .toList(),
+          ),
+          CheckboxListTile(
+            title: const Text('Use card layout'),
+            value: useCardLayout,
+            onChanged: (toggled) => {toggleCardLayout()},
+            secondary: const Icon(Icons.view_module),
           ),
           ListTile(
             title: Text('Reset game'),

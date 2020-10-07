@@ -30,6 +30,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int startingLife = 20;
   int playerCount = 4;
+  bool useCardLayout = false;
 
   List<PlayerStats> players = [
     PlayerStats(life: 20, playerNumber: 1),
@@ -42,11 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations(
-      [
-        // DeviceOrientation.landscapeLeft,
-        // DeviceOrientation.landscapeRight,
-        DeviceOrientation.portraitUp
-      ],
+      [DeviceOrientation.portraitUp],
     );
     SystemChrome.setEnabledSystemUIOverlays([]);
     Wakelock.enable();
@@ -76,6 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void toggleCardLayout() {
+    setState(() {
+      useCardLayout = !useCardLayout;
+    });
+  }
+
   /// Sets up a lifecounter for a player.
   /// Determines how to draw the lifecounter,
   /// wheter it's on landscape, portrait, upside down or rightside up.
@@ -88,18 +91,15 @@ class _MyHomePageState extends State<MyHomePage> {
     bool usePortraitMode = playerCount == 2 || isThirdPlayerInThreePlayerGame;
     bool isUpsideDown = player.playerNumber.remainder(2) == 1;
 
-    double widthMultiplier = usePortraitMode ? 0.945 : 0.47;
-    double heightMultiplier = usePortraitMode ? 0.4 : 0.45;
-
-
     return Container(
-      width: queryData.size.width * widthMultiplier - 8,
-      height: queryData.size.height * heightMultiplier,
+      width: usePortraitMode ? queryData.size.width : queryData.size.width / 2,
+      height: queryData.size.height / 2,
       child: LifeCounter(
         player: player,
         upSideDown: isTwoPlayerGame ? !isUpsideDown : isUpsideDown,
         portraitMode: usePortraitMode,
         setHealthHandler: increasePlayerHealth,
+        useCardLayout: useCardLayout,
       ),
     );
   }
@@ -107,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 117, 117, 117),
       resizeToAvoidBottomInset: false,
       drawer: MainDrawer(
         resetHandler: resetGame,
@@ -114,16 +115,13 @@ class _MyHomePageState extends State<MyHomePage> {
         startingLife: startingLife,
         playerCount: playerCount,
         setPlayerCountHandler: setPlayerCount,
+        toggleCardLayout: toggleCardLayout,
+        useCardLayout: useCardLayout,
       ),
       body: Stack(
         children: [
-          Center(
+          SizedBox.expand(
             child: Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              alignment: WrapAlignment.center,
-              direction: Axis.horizontal,
-              crossAxisAlignment: WrapCrossAlignment.center,
               children: players
                   .where((player) => player.playerNumber <= playerCount)
                   .map(setupPlayerLifecounter)

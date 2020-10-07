@@ -10,12 +10,14 @@ class LifeCounter extends StatefulWidget {
   final bool portraitMode;
   final PlayerStats player;
   final Function(int, PlayerStats) setHealthHandler;
+  final bool useCardLayout;
 
   LifeCounter({
     this.upSideDown = false,
     this.portraitMode = false,
     @required this.player,
     @required this.setHealthHandler,
+    @required this.useCardLayout,
   });
 
   @override
@@ -83,8 +85,7 @@ class _LifeCounterState extends State<LifeCounter> {
   setLifeGain(int amount) {
     if (_resetLifeGainDebounce?.isActive ?? false)
       _resetLifeGainDebounce.cancel();
-    if (_setLifeGainDebounce?.isActive ?? false)
-      _setLifeGainDebounce.cancel();
+    if (_setLifeGainDebounce?.isActive ?? false) _setLifeGainDebounce.cancel();
 
     _setLifeGainDebounce = Timer(_timerSetLifeGainDuration, () {
       resetLifeGain();
@@ -119,6 +120,9 @@ class _LifeCounterState extends State<LifeCounter> {
           : (widget.upSideDown ? 1 : 3),
       child: Stack(children: <Widget>[
         Card(
+          margin: widget.useCardLayout ? EdgeInsets.all(4.0) : EdgeInsets.zero,
+          shadowColor: widget.useCardLayout ? Colors.black : Colors.transparent,
+          elevation: widget.useCardLayout ? 2 : 0,
           child: Container(
             decoration: getLifeCounterContainerDecoration(),
             child: Row(
