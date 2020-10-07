@@ -36,21 +36,25 @@ class _LifeCounterState extends State<LifeCounter> {
     });
   }
 
-  var cardBorderRadius = new BorderRadius.all(
-    new Radius.circular(16.0),
-  );
+  getCardBorderRadius() {
+    return widget.useCardLayout
+        ? new BorderRadius.all(
+            new Radius.circular(16.0),
+          )
+        : new BorderRadius.all(Radius.zero);
+  }
 
   Decoration getLifeCounterContainerDecoration() {
     var image = usedColor.image;
     if (image != null) {
       return BoxDecoration(
         image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
-        borderRadius: cardBorderRadius,
+        borderRadius: getCardBorderRadius(),
       );
     } else {
       return BoxDecoration(
         color: usedColor.color1,
-        borderRadius: cardBorderRadius,
+        borderRadius: getCardBorderRadius(),
       );
     }
   }
@@ -128,7 +132,7 @@ class _LifeCounterState extends State<LifeCounter> {
           margin: widget.useCardLayout ? EdgeInsets.all(4.0) : EdgeInsets.zero,
           shadowColor: widget.useCardLayout ? Colors.black : Colors.transparent,
           elevation: widget.useCardLayout ? 2 : 0,
-          shape: RoundedRectangleBorder(borderRadius: cardBorderRadius),
+          shape: RoundedRectangleBorder(borderRadius: getCardBorderRadius()),
           child: Container(
             decoration: getLifeCounterContainerDecoration(),
             child: Row(
