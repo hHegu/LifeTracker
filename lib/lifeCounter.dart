@@ -106,18 +106,12 @@ class _LifeCounterState extends State<LifeCounter> {
     });
   }
 
-  Widget getSetHealthButton(String text, int healthMultiplier) =>
-      RawMaterialButton(
-        onPressed: () => setHealth(healthMultiplier, widget.player),
-        padding: EdgeInsets.all(40),
-        shape: CircleBorder(),
-        child: Text(
-          text,
-          style: TextStyle(
-            shadows: [textShadow],
-            fontSize: 50,
-            color: widget.player.life > 0 ? usedColor.textColor : Colors.red,
-          ),
+  Widget getSetHealthButton(IconData icon, int healthMultiplier) => Expanded(
+        child: IconButton(
+          onPressed: () => setHealth(healthMultiplier, widget.player),
+          alignment: Alignment.center,
+          iconSize: 48,
+          icon: Icon(icon),
         ),
       );
 
@@ -136,12 +130,12 @@ class _LifeCounterState extends State<LifeCounter> {
           child: Container(
             decoration: getLifeCounterContainerDecoration(),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                getSetHealthButton('-', -1),
+                getSetHealthButton(Icons.remove, -1),
                 Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    width: 130,
                     alignment: Alignment.center,
                     child: Stack(
                       alignment: Alignment.center,
@@ -167,7 +161,7 @@ class _LifeCounterState extends State<LifeCounter> {
                         ),
                       ],
                     )),
-                getSetHealthButton('+', 1),
+                getSetHealthButton(Icons.add, 1),
               ],
             ),
           ),
