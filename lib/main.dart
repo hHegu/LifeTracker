@@ -30,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int startingLife = 20;
   int playerCount = 4;
-  bool useCardLayout = false;
+  bool useCardLayout = true;
 
   List<PlayerStats> players = [
     PlayerStats(life: 20, playerNumber: 1),
